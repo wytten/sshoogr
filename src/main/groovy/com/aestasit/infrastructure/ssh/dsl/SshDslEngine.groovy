@@ -48,6 +48,9 @@ class SshDslEngine {
   SshDslEngine(SshOptions options) {
     this.options = options
     this.jsch = new JSch()
+// TODO: Why doesn't this work?
+//    String knownHosts = System.getenv('HOME') +'/.ssh/known_hosts'
+//    this.jsch.setKnownHosts(knownHosts);
     this.config = new Properties()
     config.put(SSH_STRICT_HOST_KEY_CHECKING, options.trustUnknownHosts ? 'no' : 'yes')
     if (!options.jschProperties.containsKey(SSH_HASH_KNOWN_HOSTS)) {
