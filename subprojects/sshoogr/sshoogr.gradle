@@ -46,12 +46,14 @@ dependencies {
     api "ch.qos.logback:logback-classic:${logbackVersion}"
     api "commons-io:commons-io:${commonsIOVersion}"
     api "commons-codec:commons-codec:${commonsCodecVersion}"
-    api "com.jcraft:jsch:${jschVersion}"
+    api "com.github.mwiede:jsch:${jschVersion}"
     api "com.lexicalscope.jewelcli:jewelcli:${jewelcliVersion}"
     api "org.fusesource.jansi:jansi:${jansiVersion}"
 
     testImplementation "junit:junit:${junitVersion}"
-    testImplementation "com.aestasit.infrastructure.mock:groovy-sshd-mock:${sshdMockVersion}"
+    testImplementation("com.aestasit.infrastructure.mock:groovy-sshd-mock:${sshdMockVersion}") {
+        exclude group: 'com.jcraft', module: 'jsch' // replaced by com.github.mwiede:jsch
+    }
     testImplementation "com.github.stefanbirkner:system-rules:${systemRulesVersion}"
 }
 

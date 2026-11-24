@@ -37,7 +37,7 @@ class SshDslEngine {
   public static final String DEFAULT_AUTH_METHODS = 'publickey,keyboard-interactive,password'
 
   private final JSch jsch
-  private final Properties config
+  private final Hashtable<String, String> config
   private final SshOptions options
 
   private SessionDelegate delegate
@@ -45,7 +45,7 @@ class SshDslEngine {
   SshDslEngine(SshOptions options) {
     this.options = options
     this.jsch = new JSch()
-    this.config = new Properties()
+    this.config = new Hashtable<String, String>()
     config.put(SSH_STRICT_HOST_KEY_CHECKING, options.trustUnknownHosts ? 'no' : 'yes')
     if (!options.jschProperties.containsKey(SSH_HASH_KNOWN_HOSTS)) {
       config.put(SSH_HASH_KNOWN_HOSTS, 'yes')

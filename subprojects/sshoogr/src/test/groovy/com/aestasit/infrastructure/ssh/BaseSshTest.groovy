@@ -16,6 +16,7 @@
 package com.aestasit.infrastructure.ssh
 
 import com.aestasit.ssh.mocks.MockSshServer
+import com.jcraft.jsch.JSch
 import org.junit.AfterClass
 import org.junit.BeforeClass
 
@@ -30,6 +31,12 @@ class BaseSshTest {
   @BeforeClass
   @SuppressWarnings(['FactoryMethodName', 'BuilderMethodWithSideEffects'])
   static void createServer() {
+    // The mock server (Apache SSHD 0.7.0) only offers legacy algorithms (SHA-1 kex, ssh-rsa/dss, CBC),
+    // which modern JSch (com.github.mwiede) disables by default.
+    JSch.setConfig('kex', JSch.getConfig('kex') + ',diffie-hellman-group14-sha1,diffie-hellman-group1-sha1')
+    JSch.setConfig('server_host_key', JSch.getConfig('server_host_key') + ',ssh-rsa,ssh-dss')
+    ['cipher.c2s', 'cipher.s2c'].each { JSch.setConfig(it, JSch.getConfig(it) + ',aes128-cbc') }
+
     MockSshServer.with {
       
       // Create command expectations.
