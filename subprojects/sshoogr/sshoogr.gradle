@@ -55,6 +55,12 @@ dependencies {
         exclude group: 'com.jcraft', module: 'jsch' // replaced by com.github.mwiede:jsch
     }
     testImplementation "com.github.stefanbirkner:system-rules:${systemRulesVersion}"
+    constraints {
+        // groovy-sshd-mock -> sshd-core 0.7.0 pulls mina-core 2.0.4 (CVE-2024-52046 et al.)
+        testImplementation('org.apache.mina:mina-core:2.0.29') {
+            because 'mina-core < 2.0.29 has critical CVEs'
+        }
+    }
 }
 
 task createChecksum(type: Checksum) {
