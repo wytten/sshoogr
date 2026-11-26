@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@GrabResolver(name='snapshot', root='https://oss.sonatype.org/content/repositories/snapshots/')
-@Grab( group = 'com.aestasit.infrastructure.sshoogr', module = 'sshoogr', version = '0.9.23-SNAPSHOT', changing = true)
+@Grab( group = 'com.aestasit.infrastructure.sshoogr', module = 'sshoogr', version = '0.9.28')
 import static com.aestasit.infrastructure.ssh.DefaultSsh.*
 import com.aestasit.infrastructure.ssh.log.AnsiEventLogger
 
