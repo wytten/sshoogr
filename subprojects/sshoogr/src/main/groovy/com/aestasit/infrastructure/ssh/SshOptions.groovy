@@ -38,6 +38,8 @@ class SshOptions extends CommonOptions {
   String defaultPassword             = null
   int defaultPort                    = 22
   boolean trustUnknownHosts          = false
+  // Consulted when trustUnknownHosts is false; set to null to skip loading it.
+  File knownHostsFile                = new File(System.getProperty('user.home'), '.ssh/known_hosts')
   Map<String, String> jschProperties = [:]
 
   boolean reuseConnection            = false

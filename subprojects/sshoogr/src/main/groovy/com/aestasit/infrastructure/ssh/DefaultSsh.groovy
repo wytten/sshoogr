@@ -100,6 +100,14 @@ class DefaultSsh {
     options.trustUnknownHosts
   }
 
+  static File getKnownHostsFile() {
+    options.knownHostsFile
+  }
+
+  static void setKnownHostsFile(File file) {
+    options.knownHostsFile = file
+  }
+
   static boolean getReuseConnection() {
     options.reuseConnection
   }

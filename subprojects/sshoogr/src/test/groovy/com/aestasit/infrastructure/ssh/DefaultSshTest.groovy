@@ -15,7 +15,9 @@
  */
 package com.aestasit.infrastructure.ssh
 
+import com.jcraft.jsch.JSch
 import com.jcraft.jsch.JSchException
+import com.jcraft.jsch.Session
 import org.junit.Test
 
 import static com.aestasit.infrastructure.ssh.DefaultSsh.*
@@ -52,6 +54,7 @@ class DefaultSshTest extends BaseSshTest {
   @Test
   void testUnknownHosts() {
     trustUnknownHosts = false
+    knownHostsFile = new File('build/no-such-known_hosts')
     try {
       remoteSession('user2:654321@localhost:2233') {
         exec 'whoami'
@@ -59,7 +62,83 @@ class DefaultSshTest extends BaseSshTest {
       fail('Should fail with host reject!')
     } catch (JSchException e) {
       assert e.message.contains('reject')
+    } finally {
+      knownHostsFile = null
     }
+  }
+
+  @Test
+  void testKnownHostsFileAcceptsKnownHost() {
+    File knownHosts = writeKnownHosts(serverHostKeyLine())
+    trustUnknownHosts = false
+    knownHostsFile = knownHosts
+    try {
+      String output = captureOutput {
+        remoteSession('user2:654321@localhost:2233') {
+          exec 'whoami'
+        }
+      }
+      assert output.contains('root')
+    } finally {
+      knownHostsFile = null
+      knownHosts.delete()
+    }
+  }
+
+  @Test
+  void testKnownHostsFileRejectsChangedKey() {
+    // Same host and key type, but a different (valid) key from another generated key pair.
+    String[] real = serverHostKeyLine().split(' ')
+    String otherKey = real[1] == 'ssh-dss' ? otherDsaPublicKey() : otherRsaPublicKey()
+    File knownHosts = writeKnownHosts("${real[0]} ${real[1]} ${otherKey}")
+    trustUnknownHosts = false
+    knownHostsFile = knownHosts
+    try {
+      remoteSession('user2:654321@localhost:2233') {
+        exec 'whoami'
+      }
+      fail('Should fail because the host key changed!')
+    } catch (JSchException e) {
+      assert e.message.contains('HostKey has been changed')
+    } finally {
+      knownHostsFile = null
+      knownHosts.delete()
+    }
+  }
+
+  private static String serverHostKeyLine() {
+    Session session = new JSch().getSession('user2', 'localhost', 2233)
+    session.password = '654321'
+    session.setConfig('StrictHostKeyChecking', 'no')
+    session.setConfig('PreferredAuthentications', 'password')
+    session.connect()
+    try {
+      def hk = session.hostKey
+      "${hk.host} ${hk.type} ${hk.key}"
+    } finally {
+      session.disconnect()
+    }
+  }
+
+  private static File writeKnownHosts(String line) {
+    File file = File.createTempFile('known_hosts', '')
+    file.text = line + '\n'
+    file
+  }
+
+  private static String otherRsaPublicKey() {
+    publicKeyBlob(com.jcraft.jsch.KeyPair.RSA)
+  }
+
+  private static String otherDsaPublicKey() {
+    publicKeyBlob(com.jcraft.jsch.KeyPair.DSA)
+  }
+
+  private static String publicKeyBlob(int type) {
+    def kp = com.jcraft.jsch.KeyPair.genKeyPair(new JSch(), type, type == com.jcraft.jsch.KeyPair.DSA ? 1024 : 2048)
+    ByteArrayOutputStream out = new ByteArrayOutputStream()
+    kp.writePublicKey(out, '')
+    new String(out.toByteArray()).trim().split(' ')[1]
   }
 
   @Test

@@ -315,6 +315,8 @@ The following list gives an overview of the available configuration options:
  - `defaultKeyFile` - Default key file to use in remote connection in case it is not specified through the `keyFile` property inside the `remoteSession` method.
  - `failOnError` (defaults to true) - If set to true, failed remote commands and file operations will throw an exception.
  - `verbose` (defaults to false) - If set to true, the library produces more debug output.
+ - `trustUnknownHosts` (defaults to false) - If set to true, host keys are not verified at all. Only use this for throwaway hosts.
+ - `knownHostsFile` (defaults to `~/.ssh/known_hosts`) - File of trusted host keys, checked when `trustUnknownHosts` is false. Connections to hosts missing from it, or whose key has changed, are rejected. Set to `null` to skip loading it.
 
 The `sshOptions` may also contain a nested `execOptions` structure, which defines remote command execution (see
 "Executing commands" section) options. It has the following properties:
