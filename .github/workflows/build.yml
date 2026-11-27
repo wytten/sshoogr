@@ -14,7 +14,10 @@ jobs:
         uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: 21
+          # 11 is the build toolchain (found via ~/.m2/toolchains.xml); 21 runs Gradle.
+          java-version: |
+            11
+            21
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5  # v6 moved caching to a proprietary component under Gradle's terms of use
