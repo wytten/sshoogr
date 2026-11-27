@@ -1,32 +1,29 @@
 === Releasing `sshoogr`
 
-TODO: write this section
+The build needs JDK 17 or newer to run (CI uses 21); the library itself is compiled for Java 8.
 
-==== Clean build and commit all changes
-
-`gradlew formatLicense`
+==== Clean build
 
 `gradlew clean build`
 
+This compiles, runs the unit tests and CodeNarc, and builds the jars and the `sshoogr` CLI distribution
+(`subprojects/sshoogr/build/distributions`).
 
 ==== Integration test
 
 `vagrant up`
 
-`gradlew clean integration`
+`gradlew integrationTest`
 
+==== Dependency lockfile
 
-==== Release snapshot
+After changing a dependency version in `gradle.properties` or `subprojects/sshoogr/sshoogr.gradle`:
 
-`gradlew clean uploadArchives`
+`gradlew resolveAndLockAll --write-locks`
 
+==== Publishing
 
-==== Publishing to Maven Central
+`gradlew publishToMavenLocal`
 
-`gradlew release`
-
-`gradlew closeAndPromoteRepository`
-
-`gradlew sdkMajorRelease`
-
-
+No remote repository is configured; the old Bintray/Sonatype/SDKMAN release automation was removed
+because those services and credentials are no longer available.

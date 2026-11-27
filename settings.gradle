@@ -14,59 +14,14 @@
  * limitations under the License.
  */
 
-buildscript {
+rootProject.name = 'sshoogr-root'
+
+include 'sshoogr'
+project(':sshoogr').projectDir = file('subprojects/sshoogr')
+project(':sshoogr').buildFileName = 'sshoogr.gradle'
+
+dependencyResolutionManagement {
     repositories {
-        gradlePluginPortal()
-        jcenter()
-        mavenLocal()
-    }
-    dependencies {
-        classpath "com.aestasit.sshoogr.gradle:sshoogr-parentbuild:$sshoogrBuildVersion"
-        classpath "com.github.breadmoirai:github-release:$releasePluginVersion"
-        classpath "org.ajoberstar:gradle-git-publish:$gitPluginVersion"
-        classpath "org.kordamp.gradle:integrationtest-gradle-plugin:$kordampPluginVersion"
-        classpath "org.kordamp.gradle:guide-gradle-plugin:$kordampPluginVersion"
-        classpath "org.kordamp.gradle:sonar-gradle-plugin:$kordampPluginVersion"
-        classpath "io.sdkman:gradle-sdkvendor-plugin:$sdkmanPluginVersion"
-        classpath "gradle.plugin.org.gradle.crypto:checksum:$checksumPluginVersion"
-    }
-}
-apply plugin: 'com.aestasit.sshoogr.gradle.sshoogr-parentbuild'
-
-rootProject.name = 'sshoogr'
-
-projects {
-    plugins {
-        all {
-            id 'idea'
-        }
-        path(':guide') {
-            id 'org.kordamp.gradle.guide'
-            id 'org.ajoberstar.git-publish'
-        }
-        dir('subprojects') {
-            id 'java-library'
-            id 'groovy'
-            id 'application'
-            id 'org.kordamp.gradle.codenarc'
-            id 'org.kordamp.gradle.sonar'
-            id 'org.kordamp.gradle.integration-test'
-            id 'io.sdkman.vendors'
-            id 'org.gradle.crypto.checksum'
-            id 'com.github.breadmoirai.github-release'
-        }
-    }
-}
-
-enforce {
-    rule(enforcer.rules.BanDuplicateClasses) { r ->
-        r.enabled = false
-    }
-    rule(enforcer.rules.ForceDependencies) { r ->
-        r.dependencies.addAll "org.slf4j:slf4j-api:${slf4jVersion}",
-            "org.slf4j:jcl-over-slf4j:${slf4jVersion}",
-            "commons-io:commons-io:${commonsIOVersion}",
-            "com.github.mwiede:jsch:${jschVersion}",
-            "junit:junit:${junitVersion}"
+        mavenCentral()
     }
 }

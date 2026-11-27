@@ -33,9 +33,21 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer
 final class Sshoogr {
 
   static void main(String[] args) {
+    int status = run(args)
+    if (status != 0) {
+      System.exit(status)
+    }
+  }
+
+  /**
+   * Runs the launcher without exiting the JVM.
+   *
+   * @return the process exit status: 0 on success, 127 if an input file is missing, 1 on any other error.
+   */
+  static int run(String[] args) {
     try {
       final SshoogrOptions options = CliFactory.parseArguments(SshoogrOptions, args)
-      options.inputFiles.each { File inputFile ->
+      for (File inputFile : options.inputFiles) {
         if (inputFile.exists()) {
           GroovyShell shell = new GroovyShell(buildBinding(options), compilerConfiguration())
           Script script = shell.parse(inputFile)
@@ -45,15 +57,16 @@ final class Sshoogr {
           System.err.println "File not found: ${inputFile.absolutePath}\n"
           System.err.println 'Sshoogr requires an input file to work!\n'
           System.err.println 'See https://github.com/aestasit/sshoogr for details.'
-          System.exit(127)
+          return 127
         }
       }
     } catch (HelpRequestedException e) {
       System.out.println e.message
     } catch (Exception ex) {
       System.err.println "${ex.message}"
-      System.exit(1)
+      return 1
     }
+    0
   }
 
   @SuppressWarnings(['UnnecessaryObjectReferences', 'FactoryMethodName'])

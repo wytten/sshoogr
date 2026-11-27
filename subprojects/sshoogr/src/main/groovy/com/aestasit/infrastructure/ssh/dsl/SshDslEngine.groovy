@@ -28,7 +28,7 @@ import static groovy.lang.Closure.DELEGATE_FIRST
  *
  */
 @CompileStatic
-@SuppressWarnings(['CatchThrowable', 'CatchException'])
+@SuppressWarnings(['CatchThrowable', 'CatchException', 'ImplementationAsType']) // JSch.setConfig() takes a Hashtable
 class SshDslEngine {
 
   public static final String SSH_STRICT_HOST_KEY_CHECKING = 'StrictHostKeyChecking'
@@ -47,8 +47,8 @@ class SshDslEngine {
     this.jsch = new JSch()
     // Only load known hosts when verifying them: with trustUnknownHosts JSch would
     // otherwise reject changed keys and could append new hosts to the user's file.
-    if (!options.trustUnknownHosts && options.knownHostsFile?.isFile()) {
-      jsch.setKnownHosts(options.knownHostsFile.absolutePath)
+    if (!options.trustUnknownHosts && options.knownHostsFile?.file) {
+      jsch.knownHosts = options.knownHostsFile.absolutePath
     }
     this.config = new Hashtable<String, String>()
     config.put(SSH_STRICT_HOST_KEY_CHECKING, options.trustUnknownHosts ? 'no' : 'yes')

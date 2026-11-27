@@ -16,15 +16,9 @@
 package com.aestasit.infrastructure.ssh
 
 import com.aestasit.infrastructure.ssh.launcher.Sshoogr
-import org.junit.Rule
 import org.junit.Test
-import org.junit.contrib.java.lang.system.ExpectedSystemExit
 
 class LauncherTest extends BaseSshTest {
-
-  @Rule
-  @SuppressWarnings('PublicInstanceField')
-  public final ExpectedSystemExit exit = ExpectedSystemExit.none()
 
   protected static final String SCRIPT = '''
     remoteSession {
@@ -37,8 +31,9 @@ class LauncherTest extends BaseSshTest {
 
   @Test
   void scriptWithConnectionParameters() {
+    int status = -1
     String output = captureOutput {
-      Sshoogr.main([
+      status = Sshoogr.run([
 
         '--user',
         'user2',
@@ -58,21 +53,23 @@ class LauncherTest extends BaseSshTest {
 
       ] as String[])
     }
+    assert status == 0
     assert output.contains('Connecting')
   }
 
   @Test
   void helpMessage() {
+    int status = -1
     String output = captureOutput {
-      Sshoogr.main(['--help'] as String[])
+      status = Sshoogr.run(['--help'] as String[])
     }
+    assert status == 0
     assert output.contains('Usage:')
   }
 
   @Test
   void notExistingScript() {
-    exit.expectSystemExitWithStatus(127)
-    Sshoogr.main(['gg.sshoogr'] as String[])
+    assert Sshoogr.run(['gg.sshoogr'] as String[]) == 127
   }
 
   static File getTemporaryScript() {
