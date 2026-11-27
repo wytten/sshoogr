@@ -1,6 +1,6 @@
 === Releasing `sshoogr`
 
-The build needs JDK 17 or newer to run (CI uses 21); the library itself is compiled for Java 8.
+The build needs JDK 17 or newer to run (CI uses 21); the library itself is compiled for Java 11.
 
 ==== Clean build
 
